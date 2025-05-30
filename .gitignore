@@ -10,3 +10,4 @@ server.key
 example.bin
 javascript/assets/tmp/
 .DS_Store
+.idea/
