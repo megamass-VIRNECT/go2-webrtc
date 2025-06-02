@@ -11,3 +11,4 @@ example.bin
 javascript/assets/tmp/
 .DS_Store
 .idea/
+/javascript/webrtc_config.json

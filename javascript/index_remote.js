@@ -54,6 +54,20 @@ function handleConnectClick() {
   saveValuesToLocalStorage();
 
   // Initialize RTC
+  fetch("webrtc_config.json")
+    .then(response => {
+        if (!response.ok) throw new Error("Config file not found");
+        return response.json();
+    })
+    .then(config => {
+        globalThis.rtc = new Go2WebRTC(config.email, config.password, config.sn);
+        globalThis.rtc.initSDP();
+    })
+    .catch(error => {
+        console.error("Failed to load WebRTC config:", error);
+        alert("WebRTC 설정 파일을 불러올 수 없습니다.");
+    });
+
   globalThis.rtc = new Go2WebRTC("megamass@virnect.com", "virnect12!", "B42D4000OAH9BA81");
   globalThis.rtc.initSDP();
 }
