@@ -1,5 +1,5 @@
-import { encryptKey } from "./utils.js";
-import { SPORT_CMD, DataChannelType } from "./constants.js";
+import {encryptKey} from "./utils.js";
+import {DataChannelType, SPORT_CMD} from "./constants.js";
 
 async function fetchWebRTCConfig(email, password, sn) {
   try {
@@ -16,8 +16,7 @@ async function fetchWebRTCConfig(email, password, sn) {
       throw new Error(error.error || "Failed to fetch configuration");
     }
 
-    const data = await response.json();
-    return data.rtc_configuration; // ICE 설정
+    return await response.json();
   } catch (err) {
     console.error("Error fetching WebRTC config:", err.message);
     return null;
