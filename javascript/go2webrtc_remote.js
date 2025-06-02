@@ -80,6 +80,8 @@ export class Go2WebRTC {
     this.pc.addTransceiver("audio", { direction: "sendrecv" });
     this.pc.addEventListener("track", this.trackEventHandler.bind(this));
     this.channel.onmessage = this.messageEventHandler.bind(this);
+
+    this.initSDP();
   }
 
   trackEventHandler(event) {

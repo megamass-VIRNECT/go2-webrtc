@@ -61,7 +61,7 @@ function handleConnectClick() {
     })
     .then(config => {
         globalThis.rtc = new Go2WebRTC(config.email, config.password, config.sn);
-        globalThis.rtc.initSDP();
+        // globalThis.rtc.initSDP();
     })
     .catch(error => {
         console.error("Failed to load WebRTC config:", error);
