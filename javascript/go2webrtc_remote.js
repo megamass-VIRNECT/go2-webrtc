@@ -58,7 +58,7 @@ export class Go2WebRTC {
 
     this.msgCallbacks = new Map();
     this.validationResult = "PENDING";
-    this.heartbeatTimer = null;
+
 
     this.initialize();
   }
@@ -83,7 +83,7 @@ export class Go2WebRTC {
     this.pc.addTransceiver("audio", { direction: "sendrecv" });
     this.pc.addEventListener("track", this.trackEventHandler.bind(this));
     this.channel.onmessage = this.messageEventHandler.bind(this);
-
+    this.heartbeatTimer = null;
 
   }
 
