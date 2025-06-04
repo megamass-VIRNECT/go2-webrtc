@@ -96,7 +96,11 @@ export class Go2WebRTC {
   }
 
   messageEventHandler(event) {
-    if (event.data && event.data.includes && !event.data.includes("heartbeat")) {
+    if (
+      event.data &&
+      event.data.includes &&
+      !event.data.includes("heartbeat")
+    ) {
       console.log("onmessage", event);
       this.handleDataChannelMessage(event);
     }
@@ -110,6 +114,7 @@ export class Go2WebRTC {
     if (data.type === DataChannelType.VALIDATION) {
       this.rtcValidation(data);
     }
+
     if (this.messageCallback) {
       this.messageCallback(data);
     }
@@ -160,35 +165,45 @@ export class Go2WebRTC {
   }
 
   startHeartbeat() {
-    this.heartbeatTimer = setInterval(() => {
+    this.heartbeatTimer = window.setInterval(() => {
       const date = new Date();
-      if (this.channel?.readyState === "open") {
-        this.channel.send(JSON.stringify({
-          type: DataChannelType.HEARTBEAT,
-          data: {
-            timeInStr: this.formatDate(date),
-            timeInNum: Math.floor(date.valueOf() / 1e3),
-          },
-        }));
-      }
-    }, 2000);
+      (this.channel == null ? void 0 : this.channel.readyState) === "open" &&
+        (this.channel == null ||
+          this.channel.send(
+            JSON.stringify({
+              type: DataChannelType.HEARTBEAT,
+              data: {
+                timeInStr: this.formatDate(date),
+                timeInNum: Math.floor(date.valueOf() / 1e3),
+              },
+            })
+          ));
+    }, 2e3);
   }
 
   rtcValidation(msg) {
     if (msg.data === "Validation Ok.") {
       logMessage("Validation OK");
       this.validationResult = "SUCCESS";
+
+      // TODO: execute all the registred callbacks in a map defined
+      // in the initRTC function
+
+      // TODO this should be on the callback for video on message
       if (document.getElementById("video-frame")) {
         logMessage("Playing video");
+        logMessage("Sending video on message");
         this.publish("", "on", DataChannelType.VID);
-        document.getElementById("video-frame").srcObject = this.VidTrackEvent.streams[0];
+
+        document.getElementById("video-frame").srcObject =
+          this.VidTrackEvent.streams[0];
       }
     } else {
       logMessage(`Sending validation key ${msg.data}`);
-      this.publish("", encryptKey(msg.data), DataChannelType.VALIDATION);
+      this.publish("", encryptKey(msg.data), DataChannelType.VALIDATION); // );
     }
   }
-
+  // Function to format date according to unitree's requirements
   formatDate(r) {
     const n = r,
       y = n.getFullYear(),
@@ -197,7 +212,7 @@ export class Go2WebRTC {
       hh = ("0" + n.getHours()).slice(-2),
       mm = ("0" + n.getMinutes()).slice(-2),
       ss = ("0" + n.getSeconds()).slice(-2);
-    return `${y}-${m}-${d} ${hh}:${mm}:${ss}`;
+    return y + "-" + m + "-" + d + " " + hh + ":" + mm + ":" + ss;
   }
 
   dealMsgKey(channelType, channel, id) {
@@ -205,23 +220,33 @@ export class Go2WebRTC {
   }
 
   saveResolve(channelType, channel, res, id) {
-    const msgKey = this.dealMsgKey(channelType, channel, id);
-    const callback = this.msgCallbacks.get(msgKey);
+    const msgKey = this.dealMsgKey(channelType, channel, id),
+      callback = this.msgCallbacks.get(msgKey);
     callback ? callback.push(res) : this.msgCallbacks.set(msgKey, [res]);
   }
 
   publish(topic, data, channelType) {
-    logMessage(`<- msg type:${channelType} topic:${topic} data:${JSON.stringify(data)}`);
+    logMessage(
+      `<- msg type:${channelType} topic:${topic} data:${JSON.stringify(data)}`
+    );
     return new Promise((resolve, reject) => {
-      if (this.channel?.readyState === "open") {
+      if (this.channel && this.channel.readyState === "open") {
         const msg = {
           type: channelType || DataChannelType.MSG,
           topic: topic,
           data: data,
         };
         this.channel.send(JSON.stringify(msg));
-        const id = data?.uuid || data?.header?.identity?.id;
-        this.saveResolve(channelType || DataChannelType.MSG, topic, resolve, id);
+        const id =
+          data && data.uuid
+            ? data.uuid
+            : data && data.header && data.header.identity.id;
+        this.saveResolve(
+          channelType || DataChannelType.MSG,
+          topic,
+          resolve,
+          id
+        );
       } else {
         console.error("data channel is not open", topic);
         reject("data channel is not open");
@@ -230,26 +255,50 @@ export class Go2WebRTC {
   }
 
   publishApi(topic, api_id, data) {
-    const uniqID = Date.now() % 2147483648 + Math.floor(Math.random() * 1e3);
+    const uniqID =
+      (new Date().valueOf() % 2147483648) + Math.floor(Math.random() * 1e3);
+
     console.log("Command:", api_id);
+
     this.publish(topic, {
-      header: { identity: { id: uniqID, api_id: api_id } },
+      header: { identity: { id: uniqID, api_id: api_id} },
       parameter: data
     });
   }
 
+  // Function to publish a message to the robot with full header
+  //  .publishReqNew(topic, { //     api_id: s.api_id,
+  //     data: s.data,
+  //     id: s.id,
+  //     priority: !!s.priority,
+  //   })
   publishReqNew(topic, msg) {
-    const uniqID = Date.now() % 2147483648 + Math.floor(Math.random() * 1e3);
-    if (!msg?.api_id) return console.error("missing api id"), Promise.reject("missing api id");
+    const uniqID =
+      (new Date().valueOf() % 2147483648) + Math.floor(Math.random() * 1e3);
+    if (!(msg != null && msg.api_id))
+      return console.error("missing api id"), Promise.reject("missing api id");
     const _msg = {
-      header: { identity: { id: msg.id || uniqID, api_id: msg.api_id || 0 } },
-      parameter: typeof msg.data === "string" ? msg.data : JSON.stringify(msg.data)
+      header: {
+        identity: {
+          id: msg.id || uniqID,
+          api_id: (msg == null ? void 0 : msg.api_id) || 0,
+        },
+      },
+      parameter: "",
     };
-    if (msg?.priority) _msg.header.policy = { priority: 1 };
-    return this.publish(topic, _msg, DataChannelType.REQUEST);
+    return (
+      msg != null &&
+        msg.data &&
+        (_msg.parameter =
+          typeof msg.data == "string" ? msg.data : JSON.stringify(msg.data)),
+      msg != null && msg.priority && (_msg.header.policy = { priority: 1 }),
+      this.publish(topic, _msg, DataChannelType.REQUEST)
+      // publish(rtc, topic,  {api_id: 1016, data: 1016}, DataChannelType.REQUEST)
+    );
   }
 }
 
+// TODO: to be removed, for debugging
 globalThis.SPORT_CMD = SPORT_CMD;
 globalThis.DataChannelType = DataChannelType;
 
