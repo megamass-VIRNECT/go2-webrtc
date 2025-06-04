@@ -70,6 +70,7 @@ export class Go2WebRTC {
       return;
     }
 
+    console.log(config);
     this.pc = new RTCPeerConnection({
       sdpSemantics: "unified-plan",
       ...config

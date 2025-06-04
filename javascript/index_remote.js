@@ -67,9 +67,6 @@ function handleConnectClick() {
         console.error("Failed to load WebRTC config:", error);
         alert("WebRTC 설정 파일을 불러올 수 없습니다.");
     });
-
-  globalThis.rtc = new Go2WebRTC("megamass@virnect.com", "virnect12!", "B42D4000OAH9BA81");
-  globalThis.rtc.initSDP();
 }
 
 function handleExecuteClick() {
