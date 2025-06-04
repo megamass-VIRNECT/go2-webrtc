@@ -96,11 +96,7 @@ export class Go2WebRTC {
   }
 
   messageEventHandler(event) {
-    if (
-      event.data &&
-      event.data.includes &&
-      !event.data.includes("heartbeat")
-    ) {
+    if (event.data && event.data.includes && !event.data.includes("heartbeat")) {
       console.log("onmessage", event);
       this.handleDataChannelMessage(event);
     }
@@ -114,7 +110,6 @@ export class Go2WebRTC {
     if (data.type === DataChannelType.VALIDATION) {
       this.rtcValidation(data);
     }
-
     if (this.messageCallback) {
       this.messageCallback(data);
     }
@@ -212,7 +207,7 @@ export class Go2WebRTC {
       hh = ("0" + n.getHours()).slice(-2),
       mm = ("0" + n.getMinutes()).slice(-2),
       ss = ("0" + n.getSeconds()).slice(-2);
-    return y + "-" + m + "-" + d + " " + hh + ":" + mm + ":" + ss;
+    return `${y}-${m}-${d} ${hh}:${mm}:${ss}`;
   }
 
   dealMsgKey(channelType, channel, id) {
@@ -259,46 +254,24 @@ export class Go2WebRTC {
       (new Date().valueOf() % 2147483648) + Math.floor(Math.random() * 1e3);
 
     console.log("Command:", api_id);
-
     this.publish(topic, {
-      header: { identity: { id: uniqID, api_id: api_id} },
+      header: { identity: { id: uniqID, api_id: api_id } },
       parameter: data
     });
   }
 
-  // Function to publish a message to the robot with full header
-  //  .publishReqNew(topic, { //     api_id: s.api_id,
-  //     data: s.data,
-  //     id: s.id,
-  //     priority: !!s.priority,
-  //   })
   publishReqNew(topic, msg) {
-    const uniqID =
-      (new Date().valueOf() % 2147483648) + Math.floor(Math.random() * 1e3);
-    if (!(msg != null && msg.api_id))
-      return console.error("missing api id"), Promise.reject("missing api id");
+    const uniqID = Date.now() % 2147483648 + Math.floor(Math.random() * 1e3);
+    if (!msg?.api_id) return console.error("missing api id"), Promise.reject("missing api id");
     const _msg = {
-      header: {
-        identity: {
-          id: msg.id || uniqID,
-          api_id: (msg == null ? void 0 : msg.api_id) || 0,
-        },
-      },
-      parameter: "",
+      header: { identity: { id: msg.id || uniqID, api_id: msg.api_id || 0 } },
+      parameter: typeof msg.data === "string" ? msg.data : JSON.stringify(msg.data)
     };
-    return (
-      msg != null &&
-        msg.data &&
-        (_msg.parameter =
-          typeof msg.data == "string" ? msg.data : JSON.stringify(msg.data)),
-      msg != null && msg.priority && (_msg.header.policy = { priority: 1 }),
-      this.publish(topic, _msg, DataChannelType.REQUEST)
-      // publish(rtc, topic,  {api_id: 1016, data: 1016}, DataChannelType.REQUEST)
-    );
+    if (msg?.priority) _msg.header.policy = { priority: 1 };
+    return this.publish(topic, _msg, DataChannelType.REQUEST);
   }
 }
 
-// TODO: to be removed, for debugging
 globalThis.SPORT_CMD = SPORT_CMD;
 globalThis.DataChannelType = DataChannelType;
 
