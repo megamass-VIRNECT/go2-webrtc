@@ -106,7 +106,7 @@ export class Go2WebRTC {
         return response.json();
       })
       .then((data) => {
-        console.log("Response from signaling server:" + JSON.stringify(data));
+        console.log("********** Response from signaling server:" + JSON.stringify(data));
         logMessage("Establishing connection...");
         this.pc
           .setRemoteDescription(data)

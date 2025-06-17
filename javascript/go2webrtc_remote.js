@@ -76,14 +76,15 @@ export class Go2WebRTC {
       ...config
     });
 
-    this.initSDP();
-
     this.channel = this.pc.createDataChannel("data");
+
     this.pc.addTransceiver("video", { direction: "recvonly" });
     this.pc.addTransceiver("audio", { direction: "sendrecv" });
     this.pc.addEventListener("track", this.trackEventHandler.bind(this));
     this.channel.onmessage = this.messageEventHandler.bind(this);
     this.heartbeatTimer = null;
+
+    this.initSDP();
 
   }
 
@@ -149,7 +150,7 @@ export class Go2WebRTC {
       return;
     }
 
-    console.log("✅ Received answer from server", answer);
+    console.log("********** ✅ Received answer from server", answer);
     logMessage("Establishing connection...");
     this.pc.setRemoteDescription(answer)
       .then(() => {
