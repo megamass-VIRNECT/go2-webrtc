@@ -83,6 +83,23 @@ export class Go2WebRTC {
       console.error("ICE Candidate Error!!!!!!!:", event.errorText || event);
     };
 
+    this.pc.onicecandidate = (event) => {
+      if (event.candidate) {
+        console.log("ICE candidate:", event.candidate.candidate);
+      } else {
+        console.log("✅ ICE gathering complete");
+      }
+    };
+
+    this.pc.oniceconnectionstatechange = () => {
+      console.log("🧊 ICE connection state:", pc.iceConnectionState);
+    };
+
+    this.pc.onconnectionstatechange = () => {
+      console.log("📡 Connection state:", pc.connectionState);
+    };
+
+
     this.pc.addTransceiver("video", { direction: "recvonly" });
     this.pc.addTransceiver("audio", { direction: "sendrecv" });
     this.pc.addEventListener("track", this.trackEventHandler.bind(this));
