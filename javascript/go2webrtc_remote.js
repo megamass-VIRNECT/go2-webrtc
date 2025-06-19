@@ -79,6 +79,10 @@ export class Go2WebRTC {
 
     this.channel = this.pc.createDataChannel("data");
 
+    this.pc.onicecandidateerror = (event) => {
+      console.error("ICE Candidate Error!!!!!!!:", event.errorText || event);
+    };
+
     this.pc.addTransceiver("video", { direction: "recvonly" });
     this.pc.addTransceiver("audio", { direction: "sendrecv" });
     this.pc.addEventListener("track", this.trackEventHandler.bind(this));
