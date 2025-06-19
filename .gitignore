@@ -12,3 +12,7 @@ javascript/assets/tmp/
 .DS_Store
 .idea/
 /javascript/webrtc_config.json
+/내부네트워크.txt
+/내부네트워크_python.txt
+/외부네트워크.txt
+/외부네트워크_python.txt
