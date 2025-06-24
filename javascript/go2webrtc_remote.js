@@ -92,11 +92,11 @@ export class Go2WebRTC {
     };
 
     this.pc.oniceconnectionstatechange = () => {
-      console.log("🧊 ICE connection state:", pc.iceConnectionState);
+      console.log("🧊 ICE connection state:", this.pc.iceConnectionState);
     };
 
     this.pc.onconnectionstatechange = () => {
-      console.log("📡 Connection state:", pc.connectionState);
+      console.log("📡 Connection state:", this.pc.connectionState);
     };
 
 
