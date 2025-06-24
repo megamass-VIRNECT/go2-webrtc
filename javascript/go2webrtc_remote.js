@@ -70,10 +70,10 @@ export class Go2WebRTC {
       return;
     }
 
-    config.iceServers.splice(1, 1)
-    config.iceServers.push({
-      urls: "stun:stun.l.google.com:19302"
-    });
+    // config.iceServers.splice(1, 1)
+    // config.iceServers.push({
+    //   urls: "stun:stun.l.google.com:19302"
+    // });
     console.log(config);
     this.pc = new RTCPeerConnection({
       sdpSemantics: "unified-plan",
@@ -110,7 +110,20 @@ export class Go2WebRTC {
     this.channel.onmessage = this.messageEventHandler.bind(this);
     this.heartbeatTimer = null;
 
-    this.initSDP();
+
+    await this.pc.setLocalDescription(await this.pc.createOffer());
+    await new Promise(resolve => {
+      const checkState = () => {
+        if (this.pc.iceGatheringState === "complete") {
+          this.pc.removeEventListener("icegatheringstatechange", checkState);
+          resolve();
+        }
+      };
+      this.pc.addEventListener("icegatheringstatechange", checkState);
+    });
+    await this.initSignaling();
+
+    // this.initSDP();
 
   }
 
