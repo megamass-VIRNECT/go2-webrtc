@@ -63,7 +63,7 @@ function logMessage(text) {
 }
 
 export class Go2WebRTC {
-  async constructor(email, password, sn, messageCallback) {
+  constructor(email, password, sn, messageCallback) {
     this.email = email;
     this.password = password;
     this.sn = sn;
@@ -72,7 +72,7 @@ export class Go2WebRTC {
     this.msgCallbacks = new Map();
     this.validationResult = "PENDING";
 
-    await this.initialize();
+    this.initialize();
   }
 
   async initialize() {
