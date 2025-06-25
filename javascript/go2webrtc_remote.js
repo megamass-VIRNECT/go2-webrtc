@@ -23,6 +23,19 @@ async function fetchWebRTCConfig(email, password, sn) {
   }
 }
 
+function getCustomWebRTCConfig() {
+  return {
+    iceServers: [
+      { urls: "stun:121.162.3.204:3478" },
+      {
+        urls: "turn:121.162.3.204:3478",
+        username: "remote",
+        credential: "remote"
+      }
+    ]
+  };
+}
+
 async function sendOfferAndGetAnswer(email, password, local_description) {
   try {
     const response = await fetch("http://127.0.0.1:8000/api/send-offer", {
@@ -50,7 +63,7 @@ function logMessage(text) {
 }
 
 export class Go2WebRTC {
-  constructor(email, password, sn, messageCallback) {
+  async constructor(email, password, sn, messageCallback) {
     this.email = email;
     this.password = password;
     this.sn = sn;
@@ -59,12 +72,12 @@ export class Go2WebRTC {
     this.msgCallbacks = new Map();
     this.validationResult = "PENDING";
 
-
-    this.initialize();
+    await this.initialize();
   }
 
   async initialize() {
-    const config = await fetchWebRTCConfig(this.email, this.password, this.sn);
+    // const config = await fetchWebRTCConfig(this.email, this.password, this.sn);
+    const config = getCustomWebRTCConfig();
     if (!config) {
       console.error("\u274c Failed to initialize WebRTC due to config error");
       return;

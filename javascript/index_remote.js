@@ -117,14 +117,16 @@ function joystickTick(joyLeft, joyRight) {
     
     // LB must be pressed
     if (gp.buttons[4].pressed == true) {
-      x = -1 * applyGamePadDeadzeone(gp.axes[1], 0.25);
-      y = -1 * applyGamePadDeadzeone(gp.axes[2], 0.25);
-      z = -1 * applyGamePadDeadzeone(gp.axes[0], 0.25);
+      const speedScale = 1;
+      x = -1 * applyGamePadDeadzeone(gp.axes[1], 0.25) * speedScale;
+      y = -1 * applyGamePadDeadzeone(gp.axes[2], 0.25) * speedScale;
+      z = -1 * applyGamePadDeadzeone(gp.axes[0], 0.25) * speedScale;
     } 
   } else {
-     y = -1 * (joyRight.GetPosX() - 100) / 50;
-     x = -1 * (joyLeft.GetPosY() - 100) / 50;
-     z = -1 * (joyLeft.GetPosX() - 100) / 50;
+     const joystickScale = 100; // 값을 키울수록 움직임이 느려짐
+     y = -1 * (joyRight.GetPosX() - 100) / joystickScale;
+     x = -1 * (joyLeft.GetPosY() - 100) / joystickScale;
+     z = -1 * (joyLeft.GetPosX() - 100) / joystickScale;
   }
 
   if (x === 0 && y === 0 && z === 0) {
