@@ -23,7 +23,7 @@ async function fetchWebRTCConfig(email, password, sn) {
   }
 }
 
-function getCustomWebRTCConfig() {
+async function getCustomWebRTCConfig() {
   return {
     iceServers: [
         {
@@ -82,7 +82,7 @@ export class Go2WebRTC {
 
   async initialize() {
     // const config = await fetchWebRTCConfig(this.email, this.password, this.sn);
-    const config = getCustomWebRTCConfig();
+    const config = await getCustomWebRTCConfig();
     if (!config) {
       console.error("\u274c Failed to initialize WebRTC due to config error");
       return;
