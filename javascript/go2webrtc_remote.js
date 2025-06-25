@@ -70,14 +70,10 @@ export class Go2WebRTC {
       return;
     }
 
-    // config.iceServers.splice(1, 1)
-    // config.iceServers.push({
-    //   urls: "stun:stun.l.google.com:19302"
-    // });
     console.log(config);
     this.pc = new RTCPeerConnection({
       sdpSemantics: "unified-plan",
-      // iceTransportPolicy: "relay",
+      iceTransportPolicy: "relay",
       ...config
     });
 
