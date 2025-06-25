@@ -26,12 +26,17 @@ async function fetchWebRTCConfig(email, password, sn) {
 function getCustomWebRTCConfig() {
   return {
     iceServers: [
-      { urls: "stun:121.162.3.204:3478" },
-      {
-        urls: "turn:121.162.3.204:3478",
-        username: "remote",
-        credential: "remote"
-      }
+        {
+            credential: "remote",
+            credentialType: "password",
+            urls: [
+                "turn:121.162.3.204:3478"
+            ],
+            username: "remote"
+        },
+        {
+            urls: "stun:121.162.3.204:3478"
+        }
     ]
   };
 }
