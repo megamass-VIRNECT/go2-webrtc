@@ -82,6 +82,10 @@ class CORSRequestHandler(http.server.SimpleHTTPRequestHandler):
 
             self.wfile.write(json.dumps(response_data).encode("utf-8"))
 
+    def do_GET(self):
+        if self.path == "/":
+            self.path = "/index.html"
+        return super().do_GET()
 
 # Set up the server
 with socketserver.TCPServer(("", PORT), CORSRequestHandler) as httpd:
