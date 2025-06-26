@@ -1,14 +1,16 @@
 import {encryptKey} from "./utils.js";
 import {DataChannelType, SPORT_CMD} from "./constants.js";
 
-async function fetchWebRTCConfig(email, password, sn) {
+const connectionMethod = "remote"
+// const connectionMethod = "local"
+
+async function fetchWebRTCConfig() {
   try {
-    const response = await fetch("http://127.0.0.1:8000/api/fetch-configuration", {
+    const response = await fetch(`http://127.0.0.1:8000/api/fetch-${connectionMethod}-configuration`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ email, password, sn })
+      }
     });
 
     if (!response.ok) {
@@ -23,32 +25,54 @@ async function fetchWebRTCConfig(email, password, sn) {
   }
 }
 
-function getCustomWebRTCConfig() {
-  return {
-    iceServers: [
-        {
-            credential: "remote",
-            credentialType: "password",
-            urls: [
-                "turn:121.162.3.204:3478"
-            ],
-            username: "remote"
-        },
-        {
-            urls: "stun:121.162.3.204:3478"
-        }
-    ]
-  };
-}
+// async function fetchWebRTCConfig(email, password, sn) {
+//   try {
+//     const response = await fetch("http://127.0.0.1:8000/api/fetch-remote-configuration", {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json"
+//       },
+//       body: JSON.stringify({ email, password, sn })
+//     });
+//
+//     if (!response.ok) {
+//       const error = await response.json();
+//       throw new Error(error.error || "Failed to fetch configuration");
+//     }
+//
+//     return await response.json();
+//   } catch (err) {
+//     console.error("Error fetching WebRTC config:", err.message);
+//     return null;
+//   }
+// }
 
-async function sendOfferAndGetAnswer(email, password, local_description) {
+// function getCustomWebRTCConfig() {
+//   return {
+//     iceServers: [
+//         {
+//             credential: "remote",
+//             credentialType: "password",
+//             urls: [
+//                 "turn:121.162.3.204:3478"
+//             ],
+//             username: "remote"
+//         },
+//         {
+//             urls: "stun:121.162.3.204:3478"
+//         }
+//     ]
+//   };
+// }
+
+async function sendOfferAndGetAnswer(local_description) {
   try {
-    const response = await fetch("http://127.0.0.1:8000/api/send-offer", {
+    const response = await fetch(`http://127.0.0.1:8000/api/send-${connectionMethod}-offer`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ email, password, local_description })
+      body: JSON.stringify({ local_description })
     });
 
     if (!response.ok) {
@@ -81,8 +105,11 @@ export class Go2WebRTC {
   }
 
   async initialize() {
-    await fetchWebRTCConfig(this.email, this.password, this.sn);
-    const config = getCustomWebRTCConfig();
+    // await fetchWebRTCConfig(this.email, this.password, this.sn);
+    // const config = getCustomWebRTCConfig();
+
+    const config = await fetchWebRTCConfig();
+
     if (!config) {
       console.error("\u274c Failed to initialize WebRTC due to config error");
       return;
@@ -193,7 +220,7 @@ export class Go2WebRTC {
   }
 
   async initSignaling() {
-    const answer = await sendOfferAndGetAnswer(this.email, this.password, {
+    const answer = await sendOfferAndGetAnswer({
       type: this.pc.localDescription.type,
       sdp: this.pc.localDescription.sdp
     });
