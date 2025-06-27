@@ -114,10 +114,13 @@ export class Go2WebRTC {
     }
 
     console.log(config);
+    // this.pc = new RTCPeerConnection({
+    //   sdpSemantics: "unified-plan",
+    //   iceTransportPolicy: "relay",
+    //   ...config
+    // });
     this.pc = new RTCPeerConnection({
-      sdpSemantics: "unified-plan",
-      iceTransportPolicy: "relay",
-      ...config
+      sdpSemantics: "unified-plan"
     });
 
     this.channel = this.pc.createDataChannel("data");
@@ -246,19 +249,19 @@ export class Go2WebRTC {
     return (l.data.data = c), l;
   }
 
-  initSDP() {
-    this.pc
-      .createOffer()
-      .then((offer) => this.pc.setLocalDescription(offer))
-      .then(() => {
-        console.log("Offer created");
-        logMessage("Offer created");
-        console.log(this.pc.localDescription);
-        logMessage(this.pc.localDescription);
-        this.initSignaling();
-      })
-      .catch(console.error);
-  }
+  // initSDP() {
+  //   this.pc
+  //     .createOffer()
+  //     .then((offer) => this.pc.setLocalDescription(offer))
+  //     .then(() => {
+  //       console.log("Offer created");
+  //       logMessage("Offer created");
+  //       console.log(this.pc.localDescription);
+  //       logMessage(this.pc.localDescription);
+  //       this.initSignaling();
+  //     })
+  //     .catch(console.error);
+  // }
 
   async initSignaling() {
     const answer = await this.sendOfferAndGetAnswer({
