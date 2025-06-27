@@ -92,6 +92,10 @@ export class Go2WebRTC {
     answer["sdp"] = this.pc.localDescription.sdp;
     console.log(answer);
 
+    console.log("=========================================");
+    console.log(this.pc.localDescription.sdp)
+    console.log("=========================================");
+
     const options = {
       method: "POST",
       headers: {

@@ -114,13 +114,10 @@ export class Go2WebRTC {
     }
 
     console.log(config);
-    // this.pc = new RTCPeerConnection({
-    //   sdpSemantics: "unified-plan",
-    //   iceTransportPolicy: "relay",
-    //   ...config
-    // });
     this.pc = new RTCPeerConnection({
-      sdpSemantics: "unified-plan"
+      sdpSemantics: "unified-plan",
+      iceTransportPolicy: "relay",
+      ...config
     });
 
     this.channel = this.pc.createDataChannel("data");
@@ -264,6 +261,12 @@ export class Go2WebRTC {
   // }
 
   async initSignaling() {
+    console.log("=========================================");
+    console.log(this.pc.localDescription.type);
+    console.log("-----------------------------------------");
+    console.log(this.pc.localDescription.sdp)
+    console.log("=========================================");
+
     const answer = await this.sendOfferAndGetAnswer({
       type: this.pc.localDescription.type,
       sdp: this.pc.localDescription.sdp
