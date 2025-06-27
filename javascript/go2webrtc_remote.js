@@ -150,13 +150,6 @@ export class Go2WebRTC {
     this.heartbeatTimer = null;
 
     await this.pc.setLocalDescription(await this.pc.createOffer());
-
-    console.log("=========================================");
-    console.log(this.pc.localDescription.type);
-    console.log("-----------------------------------------");
-    console.log(this.pc.localDescription.sdp)
-    console.log("=========================================");
-
     await new Promise(resolve => {
       const checkState = () => {
         if (this.pc.iceGatheringState === "complete") {
@@ -166,10 +159,14 @@ export class Go2WebRTC {
       };
       this.pc.addEventListener("icegatheringstatechange", checkState);
     });
+
+    console.log("=========================================");
+    console.log(this.pc.localDescription.type);
+    console.log("-----------------------------------------");
+    console.log(this.pc.localDescription.sdp)
+    console.log("=========================================");
+
     await this.initSignaling();
-
-    // this.initSDP();
-
   }
 
   async fetchWebRTCConfig() {
