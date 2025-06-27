@@ -13,6 +13,7 @@ globalThis.logMessage = logMessage;
 function loadSavedValues() {
   const savedSignallingServer = localStorage.getItem("signallingServer");
   const savedTurnServer = localStorage.getItem("turnServer");
+  const savedIceTransportPolicy = localStorage.getItem("iceTransportPolicy");
 
   if (savedSignallingServer) {
     document.getElementById("signalling-server").value = savedSignallingServer;
@@ -20,6 +21,10 @@ function loadSavedValues() {
 
   if (savedTurnServer) {
     document.getElementById("turn-server").value = savedTurnServer;
+  }
+
+  if (savedIceTransportPolicy) {
+    document.getElementById("ice-transport-policy").value = savedIceTransportPolicy;
   }
 
   const commandSelect = document.getElementById("command");
@@ -37,16 +42,17 @@ function handleConnectClick() {
   // For now, let's just log the values
   const signallingServer = document.getElementById("signalling-server").value;
   const turnServer = document.getElementById("turn-server").value;
-  console.log("Signalling Server:", signallingServer);
+  const iceTransportPolicy = document.getElementById("ice-transport-policy").value;
   console.log("Turn Server:", turnServer);
   logMessage(`Connecting to robot...`);
 
   // Save the values to localStorage
   localStorage.setItem("signallingServer", signallingServer);
   localStorage.setItem("turnServer", turnServer);
+  localStorage.setItem("iceTransportPolicy", iceTransportPolicy);
 
   // Initialize RTC
-  globalThis.rtc = new Go2WebRTC(signallingServer, turnServer);
+  globalThis.rtc = new Go2WebRTC(signallingServer, turnServer, iceTransportPolicy);
 
   // Initialize RTC
   // fetch("webrtc_config.json")

@@ -94,9 +94,10 @@ function logMessage(text) {
 }
 
 export class Go2WebRTC {
-  constructor(signallingServer, turnServer, messageCallback) {
+  constructor(signallingServer, turnServer, iceTransportPolicy, messageCallback) {
     this.signallingServer = signallingServer;
     this.turnServer = turnServer;
+    this.iceTransportPolicy = iceTransportPolicy;
     this.messageCallback = messageCallback;
     this.msgCallbacks = new Map();
     this.validationResult = "PENDING";
@@ -117,7 +118,7 @@ export class Go2WebRTC {
     console.log(config);
     this.pc = new RTCPeerConnection({
       sdpSemantics: "unified-plan",
-      iceTransportPolicy: "relay",
+      iceTransportPolicy: this.iceTransportPolicy,
       ...config
     });
 
