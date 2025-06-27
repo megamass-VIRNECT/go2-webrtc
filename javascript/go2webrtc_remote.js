@@ -115,13 +115,10 @@ export class Go2WebRTC {
 
     console.log(config);
     this.pc = new RTCPeerConnection({
-      sdpSemantics: "unified-plan"
+      sdpSemantics: "unified-plan",
+      iceTransportPolicy: "relay",
+      ...config
     });
-    // this.pc = new RTCPeerConnection({
-    //   sdpSemantics: "unified-plan",
-    //   iceTransportPolicy: "relay",
-    //   ...config
-    // });
 
     this.channel = this.pc.createDataChannel("data");
 
