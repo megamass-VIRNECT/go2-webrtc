@@ -5,26 +5,27 @@ const serverIp = "172.16.11.211";
 const serverPort = "8000";
 const baseUrl = `http://${serverIp}:${serverPort}/api`;
 
-async function fetchWebRTCConfig() {
-  try {
-    const response = await fetch(`${baseUrl}/fetch-${this.turnServer}-configuration`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      }
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || "Failed to fetch configuration");
-    }
-
-    return await response.json();
-  } catch (err) {
-    console.error("Error fetching WebRTC config:", err.message);
-    return null;
-  }
-}
+// async function fetchWebRTCConfig() {
+//   try {
+//     alert(this.turnServer);
+//     const response = await fetch(`${baseUrl}/fetch-${this.turnServer}-configuration`, {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json"
+//       }
+//     });
+//
+//     if (!response.ok) {
+//       const error = await response.json();
+//       throw new Error(error.error || "Failed to fetch configuration");
+//     }
+//
+//     return await response.json();
+//   } catch (err) {
+//     console.error("Error fetching WebRTC config:", err.message);
+//     return null;
+//   }
+// }
 
 // async function fetchWebRTCConfig(email, password, sn) {
 //   try {
@@ -66,27 +67,27 @@ async function fetchWebRTCConfig() {
 //   };
 // }
 
-async function sendOfferAndGetAnswer(local_description) {
-  try {
-    const response = await fetch(`${baseUrl}/send-${this.turnServer}-offer`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ local_description })
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || "Failed to send offer");
-    }
-
-    return await response.json();
-  } catch (err) {
-    console.error("Error sending offer:", err.message);
-    return null;
-  }
-}
+// async function sendOfferAndGetAnswer(local_description) {
+//   try {
+//     const response = await fetch(`${baseUrl}/send-${this.turnServer}-offer`, {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json"
+//       },
+//       body: JSON.stringify({ local_description })
+//     });
+//
+//     if (!response.ok) {
+//       const error = await response.json();
+//       throw new Error(error.error || "Failed to send offer");
+//     }
+//
+//     return await response.json();
+//   } catch (err) {
+//     console.error("Error sending offer:", err.message);
+//     return null;
+//   }
+// }
 
 function logMessage(text) {
   globalThis.logMessage ? globalThis.logMessage(text) : 0;
@@ -105,7 +106,7 @@ export class Go2WebRTC {
     // await fetchWebRTCConfig(this.email, this.password, this.sn);
     // const config = getCustomWebRTCConfig();
 
-    const config = await fetchWebRTCConfig();
+    const config = await this.fetchWebRTCConfig();
 
     if (!config) {
       console.error("\u274c Failed to initialize WebRTC due to config error");
@@ -165,6 +166,50 @@ export class Go2WebRTC {
 
   }
 
+  async fetchWebRTCConfig() {
+    try {
+      alert(this.turnServer);
+      const response = await fetch(`${baseUrl}/fetch-${this.turnServer}-configuration`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        }
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to fetch configuration");
+      }
+
+      return await response.json();
+    } catch (err) {
+      console.error("Error fetching WebRTC config:", err.message);
+      return null;
+    }
+  }
+
+  async sendOfferAndGetAnswer(local_description) {
+    try {
+      const response = await fetch(`${baseUrl}/send-${this.turnServer}-offer`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ local_description })
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to send offer");
+      }
+
+      return await response.json();
+    } catch (err) {
+      console.error("Error sending offer:", err.message);
+      return null;
+    }
+  }
+
   trackEventHandler(event) {
     if (event.track.kind === "video") {
       this.VidTrackEvent = event;
@@ -217,7 +262,7 @@ export class Go2WebRTC {
   }
 
   async initSignaling() {
-    const answer = await sendOfferAndGetAnswer({
+    const answer = await this.sendOfferAndGetAnswer({
       type: this.pc.localDescription.type,
       sdp: this.pc.localDescription.sdp
     });
