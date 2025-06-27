@@ -168,7 +168,6 @@ export class Go2WebRTC {
 
   async fetchWebRTCConfig() {
     try {
-      alert(this.turnServer);
       const response = await fetch(`${baseUrl}/fetch-${this.turnServer}-configuration`, {
         method: "POST",
         headers: {
