@@ -125,25 +125,25 @@ export class Go2WebRTC {
 
     this.channel = this.pc.createDataChannel("data");
 
-    this.pc.onicecandidateerror = (event) => {
-      console.error("ICE Candidate Error!!!!!!!:", event.errorText || event);
-    };
-
-    this.pc.onicecandidate = (event) => {
-      if (event.candidate) {
-        console.log("ICE candidate:", event.candidate.candidate);
-      } else {
-        console.log("✅ ICE gathering complete");
-      }
-    };
-
-    this.pc.oniceconnectionstatechange = () => {
-      console.log("🧊 ICE connection state:", this.pc.iceConnectionState);
-    };
-
-    this.pc.onconnectionstatechange = () => {
-      console.log("📡 Connection state:", this.pc.connectionState);
-    };
+    // this.pc.onicecandidateerror = (event) => {
+    //   console.error("ICE Candidate Error!!!!!!!:", event.errorText || event);
+    // };
+    //
+    // this.pc.onicecandidate = (event) => {
+    //   if (event.candidate) {
+    //     console.log("ICE candidate:", event.candidate.candidate);
+    //   } else {
+    //     console.log("✅ ICE gathering complete");
+    //   }
+    // };
+    //
+    // this.pc.oniceconnectionstatechange = () => {
+    //   console.log("🧊 ICE connection state:", this.pc.iceConnectionState);
+    // };
+    //
+    // this.pc.onconnectionstatechange = () => {
+    //   console.log("📡 Connection state:", this.pc.connectionState);
+    // };
 
 
     this.pc.addTransceiver("video", { direction: "recvonly" });
@@ -152,8 +152,14 @@ export class Go2WebRTC {
     this.channel.onmessage = this.messageEventHandler.bind(this);
     this.heartbeatTimer = null;
 
-
     await this.pc.setLocalDescription(await this.pc.createOffer());
+
+    console.log("=========================================");
+    console.log(this.pc.localDescription.type);
+    console.log("-----------------------------------------");
+    console.log(this.pc.localDescription.sdp)
+    console.log("=========================================");
+
     await new Promise(resolve => {
       const checkState = () => {
         if (this.pc.iceGatheringState === "complete") {
@@ -264,12 +270,6 @@ export class Go2WebRTC {
   // }
 
   async initSignaling() {
-    console.log("=========================================");
-    console.log(this.pc.localDescription.type);
-    console.log("-----------------------------------------");
-    console.log(this.pc.localDescription.sdp)
-    console.log("=========================================");
-
     const answer = await this.sendOfferAndGetAnswer({
       type: this.pc.localDescription.type,
       sdp: this.pc.localDescription.sdp
