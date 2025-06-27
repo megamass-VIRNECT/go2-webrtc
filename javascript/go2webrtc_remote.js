@@ -94,7 +94,8 @@ function logMessage(text) {
 }
 
 export class Go2WebRTC {
-  constructor(turnServer, messageCallback) {
+  constructor(signallingServer, turnServer, messageCallback) {
+    this.signallingServer = signallingServer;
     this.turnServer = turnServer;
     this.messageCallback = messageCallback;
     this.msgCallbacks = new Map();
@@ -192,7 +193,7 @@ export class Go2WebRTC {
 
   async sendOfferAndGetAnswer(local_description) {
     try {
-      const response = await fetch(`${baseUrl}/send-${this.turnServer}-offer`, {
+      const response = await fetch(`${baseUrl}/send-${this.signallingServer}-offer`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

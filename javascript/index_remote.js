@@ -11,7 +11,12 @@ globalThis.logMessage = logMessage;
 
 // Function to load saved values from localStorage
 function loadSavedValues() {
-  const savedTurnServer = localStorage.getItem("turn-server");
+  const savedSignallingServer = localStorage.getItem("signallingServer");
+  const savedTurnServer = localStorage.getItem("turnServer");
+
+  if (savedSignallingServer) {
+    document.getElementById("signalling-server").value = savedSignallingServer;
+  }
 
   if (savedTurnServer) {
     document.getElementById("turn-server").value = savedTurnServer;
@@ -30,15 +35,18 @@ function loadSavedValues() {
 function handleConnectClick() {
   // You can add connection logic here
   // For now, let's just log the values
+  const signallingServer = document.getElementById("signalling-server").value;
   const turnServer = document.getElementById("turn-server").value;
+  console.log("Signalling Server:", signallingServer);
   console.log("Turn Server:", turnServer);
   logMessage(`Connecting to robot...`);
 
   // Save the values to localStorage
+  localStorage.setItem("signallingServer", signallingServer);
   localStorage.setItem("turnServer", turnServer);
 
   // Initialize RTC
-  globalThis.rtc = new Go2WebRTC(turnServer);
+  globalThis.rtc = new Go2WebRTC(signallingServer, turnServer);
 
   // Initialize RTC
   // fetch("webrtc_config.json")
