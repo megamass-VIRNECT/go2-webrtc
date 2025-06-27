@@ -192,7 +192,7 @@ export class Go2WebRTC {
 
   async sendOfferAndGetAnswer(local_description) {
     try {
-      const response = await fetch(`${baseUrl}/send-remote-offer`, {
+      const response = await fetch(`${baseUrl}/send-${this.turnServer}-offer`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
