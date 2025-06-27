@@ -83,7 +83,6 @@ export class Go2WebRTC {
   }
 
   initSignaling() {
-    alert("token"+this.token);
     var answer = {
       token: this.token,
       id: "STA_localNetwork",
