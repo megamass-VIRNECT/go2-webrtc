@@ -1,9 +1,13 @@
 import {encryptKey} from "./utils.js";
 import {DataChannelType, SPORT_CMD} from "./constants.js";
 
+const serverIp = "172.16.11.211";
+const serverPort = "8000";
+const baseUrl = `http://${serverIp}:${serverPort}/api`;
+
 async function fetchWebRTCConfig() {
   try {
-    const response = await fetch(`http://127.0.0.1:8000/api/fetch-${this.turnServer}-configuration`, {
+    const response = await fetch(`${baseUrl}/fetch-${this.turnServer}-configuration`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -64,7 +68,7 @@ async function fetchWebRTCConfig() {
 
 async function sendOfferAndGetAnswer(local_description) {
   try {
-    const response = await fetch(`http://127.0.0.1:8000/api/send-${this.turnServer}-offer`, {
+    const response = await fetch(`${baseUrl}/send-${this.turnServer}-offer`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
