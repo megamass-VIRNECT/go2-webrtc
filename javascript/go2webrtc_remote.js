@@ -122,25 +122,25 @@ export class Go2WebRTC {
 
     this.channel = this.pc.createDataChannel("data");
 
-    // this.pc.onicecandidateerror = (event) => {
-    //   console.error("ICE Candidate Error!!!!!!!:", event.errorText || event);
-    // };
-    //
-    // this.pc.onicecandidate = (event) => {
-    //   if (event.candidate) {
-    //     console.log("ICE candidate:", event.candidate.candidate);
-    //   } else {
-    //     console.log("✅ ICE gathering complete");
-    //   }
-    // };
-    //
-    // this.pc.oniceconnectionstatechange = () => {
-    //   console.log("🧊 ICE connection state:", this.pc.iceConnectionState);
-    // };
-    //
-    // this.pc.onconnectionstatechange = () => {
-    //   console.log("📡 Connection state:", this.pc.connectionState);
-    // };
+    this.pc.onicecandidateerror = (event) => {
+      console.error("ICE Candidate Error!!!!!!!:", event.errorText || event);
+    };
+
+    this.pc.onicecandidate = (event) => {
+      if (event.candidate) {
+        console.log("ICE candidate:", event.candidate.candidate);
+      } else {
+        console.log("✅ ICE gathering complete");
+      }
+    };
+
+    this.pc.oniceconnectionstatechange = () => {
+      console.log("🧊 ICE connection state:", this.pc.iceConnectionState);
+    };
+
+    this.pc.onconnectionstatechange = () => {
+      console.log("📡 Connection state:", this.pc.connectionState);
+    };
 
 
     this.pc.addTransceiver("video", { direction: "recvonly" });
