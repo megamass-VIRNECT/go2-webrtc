@@ -1,12 +1,9 @@
 import {encryptKey} from "./utils.js";
 import {DataChannelType, SPORT_CMD} from "./constants.js";
 
-const connectionMethod = "remote"
-// const connectionMethod = "local"
-
 async function fetchWebRTCConfig() {
   try {
-    const response = await fetch(`http://127.0.0.1:8000/api/fetch-${connectionMethod}-configuration`, {
+    const response = await fetch(`http://127.0.0.1:8000/api/fetch-${this.turnServer}-configuration`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -67,7 +64,7 @@ async function fetchWebRTCConfig() {
 
 async function sendOfferAndGetAnswer(local_description) {
   try {
-    const response = await fetch(`http://127.0.0.1:8000/api/send-${connectionMethod}-offer`, {
+    const response = await fetch(`http://127.0.0.1:8000/api/send-${this.turnServer}-offer`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -92,15 +89,11 @@ function logMessage(text) {
 }
 
 export class Go2WebRTC {
-  constructor(email, password, sn, messageCallback) {
-    this.email = email;
-    this.password = password;
-    this.sn = sn;
+  constructor(turnServer, messageCallback) {
+    this.turnServer = turnServer;
     this.messageCallback = messageCallback;
-
     this.msgCallbacks = new Map();
     this.validationResult = "PENDING";
-
     this.initialize();
   }
 

@@ -101,12 +101,11 @@
     <div class="container">
       <div>
         <div class="input-group">
-          <label for="token">Token:</label>
-          <input type="text" id="token" name="token" />
-        </div>
-        <div class="input-group">
-          <label for="robot-ip">Robot IP:</label>
-          <input type="text" id="robot-ip" name="robot-ip" />
+          <label for="turn-server">Turn Server:</label>
+          <select id="turn-server" name="turn-server">
+            <option value="remote">Unitree</option>
+            <option value="local">Virnect</option>
+          </select>
         </div>
         <div class="input-group">
           <label for="command">Command:</label>
@@ -144,6 +143,6 @@
     <div id="joy-left" class="corner-div bottom-left"></div>
     <div id="joy-right" class="corner-div bottom-right"></div>
 
-    <script type="module" src="index.js"></script>
+    <script type="module" src="index_remote.js"></script>
   </body>
 </html>

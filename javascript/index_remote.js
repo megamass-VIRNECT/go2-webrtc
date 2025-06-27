@@ -11,14 +11,10 @@ globalThis.logMessage = logMessage;
 
 // Function to load saved values from localStorage
 function loadSavedValues() {
-  const savedToken = localStorage.getItem("token");
-  const savedRobotIP = localStorage.getItem("robotIP");
+  const savedTurnServer = localStorage.getItem("turn-server");
 
-  if (savedToken) {
-    document.getElementById("token").value = savedToken;
-  }
-  if (savedRobotIP) {
-    document.getElementById("robot-ip").value = savedRobotIP;
+  if (savedTurnServer) {
+    document.getElementById("turn-server").value = savedTurnServer;
   }
 
   const commandSelect = document.getElementById("command");
@@ -30,43 +26,34 @@ function loadSavedValues() {
   });
 }
 
-// Function to save values to localStorage
-function saveValuesToLocalStorage() {
-  const token = document.getElementById("token").value;
-  const robotIP = document.getElementById("robot-ip").value;
-
-  localStorage.setItem("token", token);
-  localStorage.setItem("robotIP", robotIP);
-}
-
 // Function to handle connect button click
 function handleConnectClick() {
   // You can add connection logic here
   // For now, let's just log the values
-  const token = document.getElementById("token").value;
-  const robotIP = document.getElementById("robot-ip").value;
-
-  console.log("Token:", token);
-  console.log("Robot IP:", robotIP);
-  logMessage(`Connecting to robot on ip ${robotIP}...`);
+  const turnServer = document.getElementById("turn-server").value;
+  console.log("Turn Server:", turnServer);
+  logMessage(`Connecting to robot...`);
 
   // Save the values to localStorage
-  saveValuesToLocalStorage();
+  localStorage.setItem("turnServer", turnServer);
 
   // Initialize RTC
-  fetch("webrtc_config.json")
-    .then(response => {
-        if (!response.ok) throw new Error("Config file not found");
-        return response.json();
-    })
-    .then(config => {
-        globalThis.rtc = new Go2WebRTC(config.email, config.password, config.sn);
-        // globalThis.rtc.initSDP();
-    })
-    .catch(error => {
-        console.error("Failed to load WebRTC config:", error);
-        alert("WebRTC 설정 파일을 불러올 수 없습니다.");
-    });
+  globalThis.rtc = new Go2WebRTC(turnServer);
+
+  // Initialize RTC
+  // fetch("webrtc_config.json")
+  //   .then(response => {
+  //       if (!response.ok) throw new Error("Config file not found");
+  //       return response.json();
+  //   })
+  //   .then(config => {
+  //       globalThis.rtc = new Go2WebRTC(config.email, config.password, config.sn);
+  //       // globalThis.rtc.initSDP();
+  //   })
+  //   .catch(error => {
+  //       console.error("Failed to load WebRTC config:", error);
+  //       alert("WebRTC 설정 파일을 불러올 수 없습니다.");
+  //   });
 }
 
 function handleExecuteClick() {
