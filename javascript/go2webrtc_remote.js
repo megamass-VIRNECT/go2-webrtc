@@ -124,6 +124,17 @@ export class Go2WebRTC {
 
     this.channel = this.pc.createDataChannel("data");
 
+    // ✅ 마이크 입력 스트림 추가
+    try {
+      const micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      micStream.getTracks().forEach((track) => {
+        this.pc.addTrack(track, micStream);
+      });
+      logMessage("🎤 마이크 스트림 연결됨");
+    } catch (e) {
+      console.error("❌ 마이크 스트림 오류:", e);
+    }
+
     this.pc.onicecandidateerror = (event) => {
       console.error("ICE Candidate Error!!!!!!!:", event.errorText || event);
     };
@@ -143,7 +154,6 @@ export class Go2WebRTC {
     this.pc.onconnectionstatechange = () => {
       console.log("📡 Connection state:", this.pc.connectionState);
     };
-
 
     this.pc.addTransceiver("video", { direction: "recvonly" });
     this.pc.addTransceiver("audio", { direction: "sendrecv" });
@@ -320,11 +330,19 @@ export class Go2WebRTC {
         document.getElementById("video-frame").srcObject =
           this.VidTrackEvent.streams[0];
       }
+
+      // 🔊 오디오 프레임 연결
+      if (document.getElementById("audio-frame") && this.AudTrackEvent?.streams[0]) {
+        logMessage("Playing audio");
+        document.getElementById("audio-frame").srcObject =
+          this.AudTrackEvent.streams[0];
+      }
     } else {
       logMessage(`Sending validation key ${msg.data}`);
       this.publish("", encryptKey(msg.data), DataChannelType.VALIDATION); // );
     }
   }
+
   // Function to format date according to unitree's requirements
   formatDate(r) {
     const n = r,
@@ -401,290 +419,3 @@ export class Go2WebRTC {
 
 globalThis.SPORT_CMD = SPORT_CMD;
 globalThis.DataChannelType = DataChannelType;
-
-
-
-
-// import {encryptKey} from "./utils.js";
-// import {DataChannelType, SPORT_CMD} from "./constants.js";
-//
-// // Function to log messages to the console and the log window
-// function logMessage(text) {
-//   globalThis.logMessage ? globalThis.logMessage(text) : 0;
-// }
-//
-// async function fetchWebRTCConfig(email, password, sn) {
-//   try {
-//     const response = await fetch("http://127.0.0.1:8000/api/fetch-configuration", {
-//       method: "POST",
-//       headers: {
-//         "Content-Type": "application/json"
-//       },
-//       body: JSON.stringify({ email, password, sn })
-//     });
-//
-//     if (!response.ok) {
-//       const error = await response.json();
-//       throw new Error(error.error || "Failed to fetch configuration");
-//     }
-//
-//     return await response.json();
-//   } catch (err) {
-//     console.error("❌ Error fetching WebRTC config:", err.message);
-//     return null;
-//   }
-// }
-//
-// export class Go2WebRTC {
-//   constructor(token, serialNumber, messageCallback) {
-//     this.token = token;
-//     this.serialNumber = serialNumber; // 기존 robotIP 대신 serialNumber
-//     this.messageCallback = messageCallback;
-//
-//     this.msgCallbacks = new Map();
-//     this.validationResult = "PENDING";
-//
-//     // ✅ TURN/STUN 서버 설정 포함
-//     this.pc = new RTCPeerConnection({
-//       sdpSemantics: "unified-plan",
-//       iceServers: [
-//         { urls: "stun:stun.l.google.com:19302" },
-//         {
-//           urls: "turn:turn.example.com:3478",
-//           username: "your_turn_username",
-//           credential: "your_turn_password"
-//         }
-//       ]
-//     });
-//
-//     this.channel = this.pc.createDataChannel("data");
-//
-//     this.pc.addTransceiver("video", { direction: "recvonly" });
-//     this.pc.addTransceiver("audio", { direction: "sendrecv" });
-//     this.pc.addEventListener("track", this.trackEventHandler.bind(this));
-//     this.channel.onmessage = this.messageEventHandler.bind(this);
-//
-//     this.heartbeatTimer = null;
-//   }
-//
-//   trackEventHandler(event) {
-//     if (event.track.kind === "video") {
-//       this.VidTrackEvent = event;
-//     } else {
-//       this.AudTrackEvent = event;
-//     }
-//   }
-//
-//   messageEventHandler(event) {
-//     if (
-//       event.data &&
-//       event.data.includes &&
-//       !event.data.includes("heartbeat")
-//     ) {
-//       console.log("onmessage", event);
-//       this.handleDataChannelMessage(event);
-//     }
-//   }
-//
-//   handleDataChannelMessage(event) {
-//     const data =
-//       typeof event.data == "string"
-//         ? JSON.parse(event.data)
-//         : this.dealArrayBuffer(event.data);
-//     if (data.type === DataChannelType.VALIDATION) {
-//       this.rtcValidation(data);
-//     }
-//
-//     if (this.messageCallback) {
-//       this.messageCallback(data);
-//     }
-//   }
-//
-//   dealArrayBuffer(n) {
-//     const o = new Uint16Array(n.slice(0, 2)),
-//       s = n.slice(4, 4 + o[0]),
-//       c = n.slice(4 + o[0]),
-//       u = new TextDecoder("utf-8"),
-//       l = JSON.parse(u.decode(s));
-//     return (l.data.data = c), l;
-//   }
-//
-//   initSDP() {
-//     this.pc
-//       .createOffer()
-//       .then((offer) => this.pc.setLocalDescription(offer))
-//       .then(() => {
-//         console.log("Offer created");
-//         logMessage("Offer created");
-//         console.log(this.pc.localDescription);
-//         logMessage(this.pc.localDescription);
-//         this.initSignaling();
-//       })
-//       .catch(console.error);
-//   }
-//
-//   initSignaling() {
-//     var answer = {
-//       token: this.token,
-//       id: this.serialNumber, // ✅ 원격 로봇 SN 사용
-//       type: "offer",
-//     };
-//     answer["sdp"] = this.pc.localDescription.sdp;
-//
-//     const options = {
-//       method: "POST",
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//       body: JSON.stringify(answer),
-//     };
-//
-//     // ✅ 원격 시그널링 서버 주소로 변경
-//     fetch("https://global.unitree.com/offer", options)
-//       .then((response) => {
-//         console.log(`statusCode: ${response.status}`);
-//         return response.json();
-//       })
-//       .then((data) => {
-//         console.log("Response from signaling server:" + JSON.stringify(data));
-//         logMessage("Establishing connection...");
-//         this.pc
-//           .setRemoteDescription(data)
-//           .then(() => {
-//             logMessage("WebRTC connection established");
-//             this.startHeartbeat();
-//           })
-//           .catch((e) => {
-//             console.log(e);
-//           });
-//       })
-//       .catch((error) => {
-//         console.error("Error sending message:", error);
-//       });
-//   }
-//
-//   startHeartbeat() {
-//     this.heartbeatTimer = window.setInterval(() => {
-//       const date = new Date();
-//       (this.channel == null ? void 0 : this.channel.readyState) === "open" &&
-//         (this.channel == null ||
-//           this.channel.send(
-//             JSON.stringify({
-//               type: DataChannelType.HEARTBEAT,
-//               data: {
-//                 timeInStr: this.formatDate(date),
-//                 timeInNum: Math.floor(date.valueOf() / 1e3),
-//               },
-//             })
-//           ));
-//     }, 2e3);
-//   }
-//
-//   rtcValidation(msg) {
-//     if (msg.data === "Validation Ok.") {
-//       logMessage("Validation OK");
-//       this.validationResult = "SUCCESS";
-//
-//       if (document.getElementById("video-frame")) {
-//         logMessage("Playing video");
-//         logMessage("Sending video on message");
-//         this.publish("", "on", DataChannelType.VID);
-//
-//         document.getElementById("video-frame").srcObject =
-//           this.VidTrackEvent.streams[0];
-//       }
-//     } else {
-//       logMessage(`Sending validation key ${msg.data}`);
-//       this.publish("", encryptKey(msg.data), DataChannelType.VALIDATION);
-//     }
-//   }
-//
-//   formatDate(r) {
-//     const n = r,
-//       y = n.getFullYear(),
-//       m = ("0" + (n.getMonth() + 1)).slice(-2),
-//       d = ("0" + n.getDate()).slice(-2),
-//       hh = ("0" + n.getHours()).slice(-2),
-//       mm = ("0" + n.getMinutes()).slice(-2),
-//       ss = ("0" + n.getSeconds()).slice(-2);
-//     return y + "-" + m + "-" + d + " " + hh + ":" + mm + ":" + ss;
-//   }
-//
-//   dealMsgKey(channelType, channel, id) {
-//     return id || `${channelType} $ ${channel}`;
-//   }
-//
-//   saveResolve(channelType, channel, res, id) {
-//     const msgKey = this.dealMsgKey(channelType, channel, id),
-//       callback = this.msgCallbacks.get(msgKey);
-//     callback ? callback.push(res) : this.msgCallbacks.set(msgKey, [res]);
-//   }
-//
-//   publish(topic, data, channelType) {
-//     logMessage(
-//       `<- msg type:${channelType} topic:${topic} data:${JSON.stringify(data)}`
-//     );
-//     return new Promise((resolve, reject) => {
-//       if (this.channel && this.channel.readyState === "open") {
-//         const msg = {
-//           type: channelType || DataChannelType.MSG,
-//           topic: topic,
-//           data: data,
-//         };
-//         this.channel.send(JSON.stringify(msg));
-//         const id =
-//           data && data.uuid
-//             ? data.uuid
-//             : data && data.header && data.header.identity.id;
-//         this.saveResolve(
-//           channelType || DataChannelType.MSG,
-//           topic,
-//           resolve,
-//           id
-//         );
-//       } else {
-//         console.error("data channel is not open", topic);
-//         reject("data channel is not open");
-//       }
-//     });
-//   }
-//
-//   publishApi(topic, api_id, data) {
-//     const uniqID =
-//       (new Date().valueOf() % 2147483648) + Math.floor(Math.random() * 1e3);
-//
-//     console.log("Command:", api_id);
-//
-//     this.publish(topic, {
-//       header: { identity: { id: uniqID, api_id: api_id } },
-//       parameter: data
-//     });
-//   }
-//
-//   publishReqNew(topic, msg) {
-//     const uniqID =
-//       (new Date().valueOf() % 2147483648) + Math.floor(Math.random() * 1e3);
-//     if (!(msg != null && msg.api_id))
-//       return console.error("missing api id"), Promise.reject("missing api id");
-//     const _msg = {
-//       header: {
-//         identity: {
-//           id: msg.id || uniqID,
-//           api_id: (msg == null ? void 0 : msg.api_id) || 0,
-//         },
-//       },
-//       parameter: "",
-//     };
-//     return (
-//       msg != null &&
-//         msg.data &&
-//         (_msg.parameter =
-//           typeof msg.data == "string" ? msg.data : JSON.stringify(msg.data)),
-//       msg != null && msg.priority && (_msg.header.policy = { priority: 1 }),
-//       this.publish(topic, _msg, DataChannelType.REQUEST)
-//     );
-//   }
-// }
-//
-// globalThis.SPORT_CMD = SPORT_CMD;
-// globalThis.DataChannelType = DataChannelType;
