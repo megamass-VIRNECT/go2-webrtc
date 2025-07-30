@@ -73,7 +73,7 @@ function handleExecuteClick() {
 }
 
 function handlePlayAudioClick() {
-  globalThis.rtc.fetchAndSendAudioFile(`http://${window.location.hostname}:8081/audio/dog-barking.wav`);
+  globalThis.rtc.fetchAndSendAudioFile(`http://${window.location.hostname}:8081/audio/beer-delivery-complete.mp3`);
 }
 
 function handleExecuteCustomClick() {
