@@ -93,7 +93,7 @@ export class Go2WebRTC {
     console.log(answer);
 
     console.log("=========================================");
-    console.log(this.pc.localDescription.sdp)
+    console.log(this.pc.localDescription.sdp);
     console.log("=========================================");
 
     const options = {
@@ -163,7 +163,7 @@ export class Go2WebRTC {
       }
     } else {
       logMessage(`Sending validation key ${msg.data}`);
-      this.publish("", encryptKey(msg.data), DataChannelType.VALIDATION); // );
+      this.publish("", encryptKey(msg.data), DataChannelType.VALIDATION);
     }
   }
   // Function to format date according to unitree's requirements
@@ -249,15 +249,63 @@ export class Go2WebRTC {
       },
       parameter: "",
     };
-    return (
-      msg != null &&
-        msg.data &&
-        (_msg.parameter =
-          typeof msg.data == "string" ? msg.data : JSON.stringify(msg.data)),
-      msg != null && msg.priority && (_msg.header.policy = { priority: 1 }),
-      this.publish(topic, _msg, DataChannelType.REQUEST)
-      // publish(rtc, topic,  {api_id: 1016, data: 1016}, DataChannelType.REQUEST)
-    );
+    if (msg?.data) {
+      _msg.parameter =
+        typeof msg.data == "string" ? msg.data : JSON.stringify(msg.data);
+    }
+    if (msg?.priority) {
+      _msg.header.policy = { priority: 1 };
+    }
+    return this.publish(topic, _msg, DataChannelType.REQUEST);
+  }
+
+  // ✅ 추가된 함수: 오디오 파일을 WebRTC를 통해 로봇에 전송
+  async fetchAndSendAudioFile(url) {
+    try {
+      const response = await fetch(url);
+      const arrayBuffer = await response.arrayBuffer();
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+
+      const sourceNode = audioCtx.createBufferSource();
+      sourceNode.buffer = audioBuffer;
+
+      const destination = audioCtx.createMediaStreamDestination();
+      sourceNode.connect(destination);
+
+      const audioTrack = destination.stream.getAudioTracks()[0];
+      const sender = this.pc.addTrack(audioTrack);
+
+      const offer = await this.pc.createOffer();
+      await this.pc.setLocalDescription(offer);
+
+      const signalingRes = await fetch(`http://${window.location.hostname}:8081/offer`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          token: this.token,
+          id: "STA_localNetwork",
+          type: "offer",
+          ip: this.robotIP,
+          sdp: this.pc.localDescription.sdp,
+        }),
+      });
+
+      const answer = await signalingRes.json();
+      await this.pc.setRemoteDescription(answer);
+      sourceNode.start();
+
+      sourceNode.onended = () => {
+        try {
+          this.pc.removeTrack(sender);
+          audioTrack.stop();
+        } catch (e) {
+          console.warn("Error stopping audio track", e);
+        }
+      };
+    } catch (err) {
+      console.error("Failed to send audio from URL:", err);
+    }
   }
 }
 

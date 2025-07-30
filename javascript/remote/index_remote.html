@@ -94,19 +94,32 @@
         right: 0;
       }
     </style>
-    <script src="md5.js"></script>
-    <script src="joy.min.js"></script>
+    <script src="../md5.js"></script>
+    <script src="../joy.min.js"></script>
   </head>
   <body>
     <div class="container">
       <div>
         <div class="input-group">
-          <label for="token">Token:</label>
-          <input type="text" id="token" name="token" />
+          <label for="signalling-server">Signalling Server:</label>
+          <select id="signalling-server" name="signalling-server">
+            <option value="remote">Unitree</option>
+            <option value="local">Go2</option>
+          </select>
         </div>
         <div class="input-group">
-          <label for="robot-ip">Robot IP:</label>
-          <input type="text" id="robot-ip" name="robot-ip" />
+          <label for="turn-server">Turn Server:</label>
+          <select id="turn-server" name="turn-server">
+            <option value="remote">Unitree</option>
+            <option value="local">Virnect</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label for="ice-transport-policy">ICE Transport Policy:</label>
+          <select id="ice-transport-policy" name="ice-transport-policy">
+            <option value="all">all</option>
+            <option value="relay">relay</option>
+          </select>
         </div>
         <div class="input-group">
           <label for="command">Command:</label>
@@ -122,6 +135,7 @@
         </div>
       </div>
       <video id="video-frame" width="640" height="480" autoplay></video>
+      <audio id="audio-frame" autoplay></audio>
     </div>
     <div
       class="input-group"
@@ -144,6 +158,6 @@
     <div id="joy-left" class="corner-div bottom-left"></div>
     <div id="joy-right" class="corner-div bottom-right"></div>
 
-    <script type="module" src="index.js"></script>
+    <script type="module" src="index_remote.js"></script>
   </body>
 </html>

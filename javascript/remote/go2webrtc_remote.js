@@ -1,5 +1,5 @@
-import {encryptKey} from "./utils.js";
-import {DataChannelType, SPORT_CMD} from "./constants.js";
+import {encryptKey} from "../utils.js";
+import {DataChannelType, SPORT_CMD} from "../constants.js";
 
 const serverIp = "172.16.11.211";
 const serverPort = "8000";

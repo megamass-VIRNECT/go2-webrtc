@@ -72,6 +72,9 @@ function handleExecuteClick() {
   });
 }
 
+function handlePlayAudioClick() {
+  globalThis.rtc.fetchAndSendAudioFile(`http://${window.location.hostname}:8081/audio/dog-barking.wav`);
+}
 
 function handleExecuteCustomClick() {
     const command = document.getElementById("custom-command").value;
@@ -187,6 +190,10 @@ document
 document
   .getElementById("execute-btn")
   .addEventListener("click", handleExecuteClick);
+
+document
+  .getElementById("play-audio-btn")
+  .addEventListener("click", handlePlayAudioClick);
 
 document
   .getElementById("execute-custom-btn")
