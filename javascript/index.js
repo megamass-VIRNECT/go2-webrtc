@@ -218,16 +218,16 @@ document.addEventListener('keydown', function(event) {
         case 's': // Reverse
             x = -0.2 * speedMultiplier;
             break;
-        case 'a': // Sideways left
+        case 'q': // Sideways left
             y = 0.2 * speedMultiplier;
             break;
-        case 'd': // Sideways right
+        case 'e': // Sideways right
             y = -0.2 * speedMultiplier;
             break;
-        case 'q': // Turn left
+        case 'a': // Turn left
             z = 1 * speedMultiplier;
             break;
-        case 'e': // Turn right
+        case 'd': // Turn right
             z = -1 * speedMultiplier;
             break;
         default:
