@@ -72,6 +72,19 @@ function handleExecuteClick() {
   });
 }
 
+function handleEmergencyStopClick() {
+  const commandSelect = document.getElementById("command");
+
+  for (let i = 0; i < commandSelect.options.length; i++) {
+    if (commandSelect.options[i].text === "Damp") {
+      commandSelect.selectedIndex = i;
+      break;
+    }
+  }
+
+  handleExecuteClick();
+}
+
 function handlePlayAudioClick() {
   globalThis.rtc.fetchAndSendAudioFile(`http://${window.location.hostname}:8081/audio/beer-delivery-complete.mp3`);
 }
@@ -194,6 +207,10 @@ document
 document
   .getElementById("play-audio-btn")
   .addEventListener("click", handlePlayAudioClick);
+
+document
+  .getElementById("emergency-stop-btn")
+  .addEventListener("click", handleEmergencyStopClick);
 
 document
   .getElementById("execute-custom-btn")
