@@ -202,28 +202,33 @@ document
 
 
 
-  document.addEventListener('keydown', function(event) {
+document.addEventListener('keydown', function(event) {
     const key = event.key.toLowerCase();
     let x = 0, y = 0, z = 0;
+    let speedMultiplier = 1;
+
+    if (event.shiftKey) {
+        speedMultiplier = 2;
+    }
 
     switch (key) {
         case 'w': // Forward
-            x = 0.8;
+            x = 0.4 * speedMultiplier;
             break;
         case 's': // Reverse
-            x = -0.4;
+            x = -0.2 * speedMultiplier;
             break;
         case 'a': // Sideways left
-            y = 0.4;
+            y = 0.2 * speedMultiplier;
             break;
         case 'd': // Sideways right
-            y = -0.4;
+            y = -0.2 * speedMultiplier;
             break;
         case 'q': // Turn left
-            z = 2;
+            z = 1 * speedMultiplier;
             break;
         case 'e': // Turn right
-            z = -2;
+            z = -1 * speedMultiplier;
             break;
         default:
             return; // Ignore other keys
