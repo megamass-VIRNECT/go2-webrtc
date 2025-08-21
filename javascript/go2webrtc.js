@@ -15,7 +15,10 @@ export class Go2WebRTC {
 
     this.msgCallbacks = new Map();
     this.validationResult = "PENDING";
-    this.pc = new RTCPeerConnection({ sdpSemantics: "unified-plan" });
+    this.pc = new RTCPeerConnection({ 
+      sdpSemantics: "unified-plan",
+      iceServers: []
+    });
     this.channel = this.pc.createDataChannel("data");
 
     this.pc.addTransceiver("video", { direction: "recvonly" });
