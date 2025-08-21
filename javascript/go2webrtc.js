@@ -17,7 +17,8 @@ export class Go2WebRTC {
     this.validationResult = "PENDING";
     this.pc = new RTCPeerConnection({ 
       sdpSemantics: "unified-plan",
-      iceServers: []
+      iceServers: [],
+      iceTransportPolicy: "all"
     });
     this.channel = this.pc.createDataChannel("data");
 
@@ -27,6 +28,15 @@ export class Go2WebRTC {
     this.channel.onmessage = this.messageEventHandler.bind(this);
 
     this.heartbeatTimer = null;
+
+    pc.addEventListener("icecandidate", (event) => {
+      if (event.candidate) {
+        // 172.16.x.x 대역만 허용
+        if (event.candidate.candidate.includes("172.16.")) {
+          sendCandidateToPeer(event.candidate);
+        }
+      }
+    });
   }
 
   trackEventHandler(event) {
