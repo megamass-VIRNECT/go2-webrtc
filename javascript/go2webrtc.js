@@ -29,7 +29,7 @@ export class Go2WebRTC {
 
     this.heartbeatTimer = null;
 
-    pc.addEventListener("icecandidate", (event) => {
+    this.pc.addEventListener("icecandidate", (event) => {
       if (event.candidate) {
         // 172.16.x.x 대역만 허용
         if (event.candidate.candidate.includes("172.16.")) {
